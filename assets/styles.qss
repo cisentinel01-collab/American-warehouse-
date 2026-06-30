@@ -1,0 +1,252 @@
+/* Professional Arabic WMS Theme - HIGH CONTRAST DARK MODE V4 */
+
+QMainWindow, QDialog, QMessageBox {
+    background-color: #000000; /* Pure Black Background */
+    color: #ffffff;
+}
+
+QWidget {
+    font-family: 'Cairo', 'Segoe UI', Tahoma;
+    background-color: #000000;
+    color: #ffffff !important; /* Force White text globally */
+}
+
+/* Sidebar Navigation */
+#Sidebar {
+    background-color: #111111;
+    min-width: 250px;
+    border-left: 1px solid #d4af37;
+}
+
+#Sidebar QPushButton {
+    background-color: transparent;
+    color: #ffffff !important;
+    border: none;
+    padding: 15px 20px;
+    text-align: right;
+    font-size: 14px;
+    border-right: 5px solid transparent;
+}
+
+#Sidebar QPushButton:hover {
+    background-color: #222222;
+    color: #d4af37 !important;
+}
+
+#Sidebar QPushButton:checked, #Sidebar QPushButton[active="true"] {
+    background-color: #1a2a6c;
+    border-right: 5px solid #d4af37;
+    color: #d4af37 !important;
+    font-weight: bold;
+}
+
+/* Header Bar */
+#Header {
+    background-color: #000000;
+    min-height: 65px;
+    border-bottom: 2px solid #d4af37;
+}
+
+#Header QLabel {
+    color: #d4af37 !important;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Dashboard & Cards */
+#Card {
+    background-color: #111111;
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid #333333;
+}
+
+#CardTitle {
+    color: #d4af37 !important;
+    font-size: 15px;
+    font-weight: bold;
+}
+
+#CardValue {
+    font-size: 28px;
+    font-weight: bold;
+    color: #ffffff !important;
+}
+
+/* Buttons - HIGH VISIBILITY GOLD & WHITE */
+QPushButton {
+    border-radius: 6px;
+    padding: 12px 25px;
+    font-weight: bold;
+    font-size: 13px;
+    min-height: 20px;
+    color: #ffffff !important;
+    border: 1px solid #ffffff;
+}
+
+QPushButton#PrimaryButton {
+    background-color: #1a2a6c;
+    border: 1px solid #1a2a6c;
+}
+
+QPushButton#GoldButton {
+    background-color: #d4af37;
+    color: #000000 !important; /* Black text on Gold button */
+    border: 1px solid #d4af37;
+}
+
+QPushButton:hover {
+    background-color: #333333;
+}
+
+/* Labels and Group Titles - FORCE WHITE */
+QLabel, QGroupBox, QCheckBox, QRadioButton {
+    color: #ffffff !important;
+    background: transparent;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    color: #d4af37 !important;
+    padding: 5px;
+}
+
+/* Inputs - High Contrast Dark */
+QLineEdit, QTextEdit, QSpinBox, QDoubleSpinBox, QDateEdit {
+    background-color: #111111;
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    padding: 10px;
+    color: #ffffff !important;
+    font-size: 15px;
+    qproperty-alignment: 'AlignCenter';
+}
+
+QLineEdit:focus, QSpinBox:focus {
+    border: 2px solid #ffffff;
+}
+
+/* Fix spinbox text overlap in RTL */
+QSpinBox, QDoubleSpinBox {
+    padding-left: 35px;
+    padding-right: 35px;
+}
+
+QComboBox {
+    background-color: #111111;
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    padding: 10px;
+    color: #ffffff !important;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #000000;
+    color: #ffffff !important;
+    selection-background-color: #d4af37;
+    selection-color: #000000 !important;
+    border: 1px solid #d4af37;
+}
+
+/* Tables - CRITICAL DARK VISIBILITY */
+QTableWidget {
+    background-color: #111111;
+    gridline-color: #333333;
+    border: 2px solid #d4af37;
+    color: #ffffff !important;
+    font-size: 14px;
+    selection-background-color: #d4af37;
+    selection-color: #000000 !important;
+}
+
+QHeaderView::section {
+    background-color: #1a2a6c;
+    color: #ffffff !important;
+    padding: 12px;
+    font-weight: bold;
+    border: 1px solid #d4af37;
+    font-size: 14px;
+}
+
+/* Tabs */
+QTabWidget::pane {
+    border: 2px solid #d4af37;
+    background-color: #000000;
+}
+
+QTabBar::tab {
+    background-color: #111111;
+    color: #ffffff !important;
+    padding: 15px 30px;
+    border: 1px solid #333333;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+QTabBar::tab:selected {
+    background-color: #1a2a6c;
+    color: #d4af37 !important;
+    border-bottom: 2px solid #d4af37;
+}
+
+/* Progress Bars */
+QProgressBar {
+    border: 1px solid #d4af37;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #111111;
+    color: #ffffff !important;
+    font-weight: bold;
+}
+
+QProgressBar::chunk {
+    background-color: #d4af37;
+}
+
+/* Summary Labels */
+#GoldSummaryLabel {
+    background-color: #d4af37;
+    color: #000000 !important;
+    font-size: 22px;
+    font-weight: bold;
+    padding: 20px;
+    border: 3px solid #000000;
+    border-radius: 12px;
+    margin: 10px 0;
+}
+
+/* ScrollBars - Dark & Gold Premium */
+QScrollBar:vertical {
+    border: none;
+    background: #000000;
+    width: 14px;
+    margin: 22px 0 22px 0;
+}
+
+QScrollBar::handle:vertical {
+    background: #d4af37;
+    min-height: 20px;
+    border-radius: 7px;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    border: 1px solid #d4af37;
+    background: #111111;
+    height: 20px;
+    subcontrol-origin: margin;
+}
+
+QScrollBar::up-arrow:vertical, QScrollBar::down-arrow:vertical {
+    width: 10px;
+    height: 10px;
+    background: #d4af37;
+}
+
+/* Custom for MessageBox and Dialogs */
+QDialog QLabel {
+    color: #ffffff !important;
+}
+
+QMessageBox QLabel {
+    color: #ffffff !important;
+}
