@@ -134,5 +134,10 @@
   "global_batch_dates": "Apply Global Dates (Override)",
   "mapping_required_fields_suppliers": "Supplier Name is a mandatory mapping.",
   "loading_data_wait": "Analyzing file in background, please wait...",
-  "no_data_found": "No data could be extracted from the file."
+  "no_data_found": "No data could be extracted from the file.",
+  "select_template": "Select Template",
+  "mapping_templates": "Mapping Templates",
+  "save_template": "Save Template",
+  "template_name": "Template Name",
+  "template_saved": "Template saved successfully."
 }

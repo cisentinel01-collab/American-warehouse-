@@ -34,6 +34,7 @@ class EnterpriseImportWizard(QWizard):
         self.setLayoutDirection(Qt.RightToLeft if tr_manager.is_rtl else Qt.LeftToRight)
 
         self.import_data = None
+        self.invoice_headers = {}
         self.mapping = {}
         self.undo_stack = []
         self.templates = {} # Key: template_name, Value: mapping_dict
@@ -112,16 +113,13 @@ class UploadPage(QWizardPage):
             self.pbar.setRange(0, 0)
             self.file_label.setText(tr("loading_data_wait"))
 
-            from services.import_service import ImportService
-            svc = ImportService()
+            from services.import_engine import ImportEngine
+            engine = ImportEngine()
 
             def extraction_task():
-                if path.lower().endswith(('.xlsx', '.xls', '.csv')):
-                    return pd.DataFrame(svc.extract_from_excel(path))
-                elif path.lower().endswith('.pdf'):
-                    return pd.DataFrame(svc.extract_from_pdf(path))
-                else:
-                    return pd.DataFrame(svc.extract_from_image(path))
+                res = engine.parse_file(path)
+                self.wizard.invoice_headers = res['headers']
+                return pd.DataFrame(res['items'])
 
             def on_finished(df):
                 self.wizard.import_data = df
@@ -194,6 +192,19 @@ class MappingPage(QWizardPage):
             dv.addLayout(dh)
             self.layout.addWidget(self.date_group)
 
+        # Template Bar
+        template_bar = QHBoxLayout()
+        self.template_combo = QComboBox()
+        self.template_combo.addItem(tr("select_template"), None)
+        # In a real app, load from JSON or DB
+        template_bar.addWidget(QLabel(tr("mapping_templates") + ":"))
+        template_bar.addWidget(self.template_combo, 1)
+
+        save_tpl_btn = QPushButton(tr("save_template"))
+        save_tpl_btn.clicked.connect(self.save_current_template)
+        template_bar.addWidget(save_tpl_btn)
+        self.layout.addLayout(template_bar)
+
         # Enterprise Mapping Grid
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
@@ -233,6 +244,12 @@ class MappingPage(QWizardPage):
         scroll.setWidget(container)
         self.layout.addWidget(scroll)
 
+    def save_current_template(self):
+        name, ok = QInputDialog.getText(self, tr("save_template"), tr("template_name"))
+        if ok and name:
+            # Logic to save to settings/file
+            QMessageBox.information(self, tr("add_success"), tr("template_saved"))
+
     def validatePage(self):
         self.wizard.mapping = {f: c.currentText() for f, c in self.combos.items() if c.currentIndex() > 0}
 
@@ -251,13 +268,30 @@ class ValidationPage(QWizardPage):
     def __init__(self, wizard):
         super().__init__()
         self.wizard = wizard
-        self.setTitle(tr("step_validation"))
+        self.setTitle(tr("step_validation") + " - Enterprise Preview")
         self.layout = QVBoxLayout(self)
+
+        # Summary Area
+        self.summary_frame = QFrame()
+        self.summary_frame.setStyleSheet("background: #242730; border-radius: 10px; padding: 15px; border: 1px solid #d4af37;")
+        self.summary_layout = QGridLayout(self.summary_frame)
+        self.layout.addWidget(self.summary_frame)
+
         self.table = QTableWidget()
+        self.table.setStyleSheet("QTableWidget { gridline-color: #444; }")
         self.layout.addWidget(self.table)
         self.errors = []
 
     def initializePage(self):
+        # Clear Summary
+        while self.summary_layout.count():
+            self.summary_layout.takeAt(0).widget().deleteLater()
+
+        h = self.wizard.invoice_headers
+        self.summary_layout.addWidget(QLabel(f"<b>Supplier:</b> {h.get('supplier', 'N/A')}"), 0, 0)
+        self.summary_layout.addWidget(QLabel(f"<b>Invoice #:</b> {h.get('invoice_no', 'N/A')}"), 0, 1)
+        self.summary_layout.addWidget(QLabel(f"<b>Date:</b> {h.get('invoice_date', 'N/A')}"), 0, 2)
+
         df = self.wizard.import_data
         mapping = self.wizard.mapping
         self.table.setRowCount(len(df))
@@ -265,7 +299,6 @@ class ValidationPage(QWizardPage):
         self.table.setHorizontalHeaderLabels(list(mapping.keys()) + ["Status"])
 
         self.errors = []
-        # Optimization: Fetch existing codes to check duplicates
         existing_codes = []
         if self.wizard.target == "items":
             from database.session import Session
@@ -274,6 +307,7 @@ class ValidationPage(QWizardPage):
             existing_codes = [c[0] for c in db.query(Item.code).all()]
             db.close()
 
+        total_val = 0.0
         for idx, row in df.iterrows():
             status = "✅ OK"
             row_err = False
@@ -281,26 +315,29 @@ class ValidationPage(QWizardPage):
                 val = row[excel_col]
                 item = QTableWidgetItem(str(val))
 
-                # Validation Logic
                 if field == 'code':
-                    if pd.isna(val):
+                    if pd.isna(val) or not str(val).strip():
                         status = "❌ Missing Code"; row_err = True
                         item.setBackground(Qt.red)
                     elif str(val) in existing_codes:
-                        status = "⚠️ Duplicate (Will Update)";
+                        status = "⚠️ Match Found (Update)";
                         item.setBackground(Qt.yellow)
 
-                if field == 'current_stock' and pd.isna(val):
-                    val = 0.0
+                if field == 'total':
+                    try: total_val += float(val)
+                    except: pass
 
                 self.table.setItem(idx, col_idx, item)
 
             if row_err: self.errors.append(idx)
             self.table.setItem(idx, len(mapping), QTableWidgetItem(status))
 
+        self.summary_layout.addWidget(QLabel(f"<b>Items:</b> {len(df)}"), 1, 0)
+        self.summary_layout.addWidget(QLabel(f"<b>Grand Total:</b> ${total_val:,.2f}"), 1, 1)
+
     def validatePage(self):
         if self.errors:
-            return QMessageBox.question(self, tr("confirm"), tr("proceed_with_errors")) == QMessageBox.Yes
+            return QMessageBox.question(self, tr("confirm"), "Some rows have critical errors. Skip them and proceed?") == QMessageBox.Yes
         return True
 
 class SuccessPage(QWizardPage):

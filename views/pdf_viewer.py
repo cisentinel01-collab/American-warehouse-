@@ -28,6 +28,18 @@ class EmbeddedPDFViewer(QDialog):
         t_layout.addWidget(self.title_lbl)
         t_layout.addStretch()
 
+        zoom_in = QPushButton("+")
+        zoom_in.clicked.connect(lambda: self.browser.setZoomFactor(self.browser.zoomFactor() + 0.1))
+        t_layout.addWidget(zoom_in)
+
+        zoom_out = QPushButton("-")
+        zoom_out.clicked.connect(lambda: self.browser.setZoomFactor(self.browser.zoomFactor() - 0.1))
+        t_layout.addWidget(zoom_out)
+
+        rotate_btn = QPushButton("Rotate")
+        rotate_btn.clicked.connect(self.handle_rotate)
+        t_layout.addWidget(rotate_btn)
+
         print_btn = QPushButton("Print")
         print_btn.clicked.connect(self.handle_print)
         t_layout.addWidget(print_btn)
@@ -50,3 +62,7 @@ class EmbeddedPDFViewer(QDialog):
         self.browser.page().printToPdf(self.pdf_path.replace(".pdf", "_print.pdf"))
         # In a real environment, we'd trigger system print dialog
         pass
+
+    def handle_rotate(self):
+        # Inject JS to rotate the PDF (simplified)
+        self.browser.page().runJavaScript("document.body.style.transform += 'rotate(90deg)';")

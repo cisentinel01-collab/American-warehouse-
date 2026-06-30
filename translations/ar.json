@@ -134,5 +134,10 @@
   "global_batch_dates": "تطبيق تواريخ موحدة (تجاوز)",
   "mapping_required_fields_suppliers": "اسم المورد حقل إجباري.",
   "loading_data_wait": "جاري تحليل الملف في الخلفية، يرجى الانتظار...",
-  "no_data_found": "لم يتم العثور على بيانات في الملف المختار."
+  "no_data_found": "لم يتم العثور على بيانات في الملف المختار.",
+  "select_template": "اختر قالب",
+  "mapping_templates": "قوالب الربط",
+  "save_template": "حفظ كقالب",
+  "template_name": "اسم القالب",
+  "template_saved": "تم حفظ القالب بنجاح."
 }

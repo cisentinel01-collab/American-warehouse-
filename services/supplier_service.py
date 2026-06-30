@@ -18,6 +18,18 @@ class SupplierService:
 
     def create_supplier(self, data: dict):
         try:
+            # Match by name first
+            if 'name' in data:
+                existing = self._repo.get_by_name(data['name'])
+                if existing:
+                    # Update
+                    for k, v in data.items():
+                        if v and hasattr(existing, k):
+                            setattr(existing, k, v)
+                    self.db.commit()
+                    signal_manager.supplier_changed.emit()
+                    return existing
+
             new_s = Supplier(**data)
             res = self._repo.create(new_s)
             signal_manager.supplier_changed.emit()
@@ -45,6 +57,9 @@ class SupplierService:
 
     def get_supplier_by_id(self, s_id: int):
         return self._repo.get_by_id(s_id)
+
+    def get_supplier_by_name(self, name: str):
+        return self._repo.get_by_name(name)
 
     def search(self, term: str):
         return self._repo.search(term)

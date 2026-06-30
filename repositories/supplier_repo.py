@@ -16,3 +16,6 @@ class SupplierRepository(BaseRepository[Supplier]):
             ),
             Supplier.is_deleted == False
         ).all()
+
+    def get_by_name(self, name: str):
+        return self.db.query(Supplier).filter(Supplier.name == name, Supplier.is_deleted == False).first()

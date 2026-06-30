@@ -3,6 +3,7 @@ from models.inventory import Batch
 from database.session import Session
 from utils.signals import signal_manager
 from app_logging.app_logger import app_logger
+from datetime import datetime
 
 class ExpirationService(QObject):
     expired_found = Signal(list, list) # expired, soon
@@ -20,10 +21,21 @@ class ExpirationService(QObject):
 
     def check_expirations(self):
         try:
+            from sqlalchemy.orm import joinedload
             db = Session()
-            expired = Batch.get_expired(db)
-            soon = Batch.get_expiring_soon(6, db)
-            db.close()
+            # Eager load 'item' to avoid DetachedInstanceError in background thread
+            expired = db.query(Batch).options(joinedload(Batch.item)).filter(
+                Batch.expiry_date < datetime.utcnow().date(),
+                Batch.quantity > 0
+            ).all()
+
+            from datetime import timedelta
+            future_date = datetime.utcnow().date() + timedelta(days=6*30)
+            soon = db.query(Batch).options(joinedload(Batch.item)).filter(
+                Batch.expiry_date >= datetime.utcnow().date(),
+                Batch.expiry_date <= future_date,
+                Batch.quantity > 0
+            ).all()
 
             if expired or soon:
                 self.expired_found.emit(expired, soon)

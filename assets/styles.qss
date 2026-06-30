@@ -54,23 +54,28 @@ QWidget {
 }
 
 /* Dashboard & Cards */
-#Card {
+#Card, #ProStatCard {
     background-color: #111111;
     border-radius: 12px;
     padding: 20px;
-    border: 2px solid #333333;
+    border: 1px solid #333333;
 }
 
-#CardTitle {
+#CardTitle, #ProStatCard QLabel {
     color: #d4af37 !important;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: bold;
 }
 
-#CardValue {
-    font-size: 28px;
+#CardValue, #ValueLabel {
+    font-size: 32px;
     font-weight: bold;
     color: #ffffff !important;
+}
+
+#ProStatCard:hover {
+    background-color: #1a1c23;
+    border: 1px solid #d4af37;
 }
 
 /* Buttons - HIGH VISIBILITY GOLD & WHITE */

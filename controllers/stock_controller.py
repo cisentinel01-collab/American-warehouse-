@@ -68,3 +68,9 @@ class StockController:
     def generate_movement_pdf(self, m_id):
         # In a real ERP, this would use a movement-specific report generator
         return self.service.generate_invoice_pdf(m_id)
+
+    def create_item(self, data):
+        return self.item_service.create_item(data)
+
+    def create_supplier(self, data):
+        return self.supplier_service.create_supplier(data)

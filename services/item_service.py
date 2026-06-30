@@ -14,8 +14,22 @@ class ItemService:
         return self.item_repo.get_all(skip=skip, limit=limit)
 
     def create_item(self, item_data: dict) -> Item:
-        # Handle manual 'unit' text mapping to uom_id or just use unit column
-        # In our schema 'unit' is a TEXT column in items table.
+        # Enterprise Match & Merge
+        existing = None
+        if 'code' in item_data:
+            existing = self.item_repo.get_by_code(item_data['code'])
+        if not existing and 'barcode' in item_data:
+            existing = self.item_repo.get_by_barcode(item_data['barcode'])
+
+        if existing:
+            # Update existing with new info if provided
+            for key, val in item_data.items():
+                if val and hasattr(existing, key):
+                    setattr(existing, key, val)
+            self.db.commit()
+            signal_manager.item_changed.emit()
+            return existing
+
         new_item = Item(**item_data)
         item = self.item_repo.create(new_item)
         app_logger.info(f"Item created: {item.code}")
